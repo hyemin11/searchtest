@@ -27,8 +27,6 @@ class ProductControllerTest {
         //Map doc = productService.bookSearch("미움","title");
         //System.out.println(doc);
 
-        JSONArray js = productService.bookResult("미움","title");
-        System.out.println(js);
         //model.addAttribute("test",doc);
         //return doc;
     }
