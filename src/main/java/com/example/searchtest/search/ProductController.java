@@ -1,49 +1,65 @@
-package com.book.booksearch.search;
+package com.example.searchtest.search;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.Resource;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 public class ProductController {
-    private String apiURL = "https://dapi.kakao.com/v3/search/book";
 
-    @Value("${kakao-admin-key}")
-    private String kakao_admin_key;
-
-    @Resource
+    @Autowired
     private ProductService productService;
+    @Autowired
+    private DocumentsRepository documentsRepository;
 
-    @GetMapping("/search")
-    public String selectSearch(Model model,@RequestParam String target,@RequestParam String searchWord) throws Exception {
+    @RequestMapping("/result")
+    public String selectSearch(Model model, @ModelAttribute("target") String target, @ModelAttribute("searchWord") String searchWord, HttpSession session) throws Exception {
+
         model.addAttribute("target",target);
         model.addAttribute("searchWord",searchWord);
-        String test = productService.bookSearch(searchWord,target);
-
-        return test;
+        return "result";
     }
-/*
-    @PostMapping("/result")
-    public ModelAndView searchResult(@ModelAttribute Model model)
-    {
+
+    @GetMapping("/search.do")
+    public String resultSearch(Model model,
+                                     @ModelAttribute("chk") Book book,
+                                     HttpSession session) throws Exception {
+
+        HashMap<String,Object> map = productService.callAPITest(book);
+        Book sk = new Book();
+        sk.setSearchWord(book.getSearchWord());
+        productService.saveKeyword(sk);
+        //JSONObject object = (JSONObject) map.get("json");
+        model.addAttribute("doc",map.get("documents") );
+
+        return "result";
+    }
+
+    @GetMapping("/searchresult.do")
+    public String resultList(Model model, @ModelAttribute("doc") JSONObject object) throws Exception{
 
 
         return "search";
-    }*/
+    }
 
+    @GetMapping("/test")
+    public ResponseEntity<Map<String,Object>> getResult(){
+        List<Documents> documents = documentsRepository.findAll();
+        Map<String,Object> result = new HashMap<>();
+        result.put("documents",documents);
+        result.put("count",documents.size());
+        return ResponseEntity.ok().body(result);
+
+    }
 
 
 

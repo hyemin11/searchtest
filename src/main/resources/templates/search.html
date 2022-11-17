@@ -16,36 +16,210 @@
     </div>
     <div class="container-md">
         <h2>검색하기</h2>
-        <form>
+        <!--<form th:action="@{/search.do}" th:field="${chk}" th:value="${chk}" th:method="get">-->
+        <form th:field="${chk}" th:value="${chk}" th:method="get">
             <fieldset>
-                <select class="select pull-right">
-                    <option th:selected="${target}=='title'">제목</option>
-                    <option th:selected="${target}=='person'">저자</option>
-                    <option th:selected="${target}=='isbn'">isbn</option>
-                    <option th:selected="${target}=='publisher'">출판사</option>
+                <select id="target" th:field="${chk.target}" class="select pull-right">
+                    <option th:value="${''}">전체</option>
+                    <option th:value="'title'">제목</option>
+                    <option th:value="'person'">저자</option>
+                    <option th:value="'isbn'">isbn</option>
+                    <option th:value="'publisher'">출판사</option>
                 </select>
-                <input th:field="${searchWord}" type="text">
-                <input type="submit" th:onclick="|location.href='@{/search}'|" value="검색">
+                <input  id="searchWord" th:field="${chk.searchWord}" type="text">
+                <input type="button" class="subbutton" th:onclick="|javascript:testtest()|"  value="검색">
             </fieldset>
         </form>
-        <div class="">
-            <div th:each="product:${productList}">
-                <div class="">
-                    <img alt="" class="" src="images/3981417.jpg">
-                    <div class="">
-                        <div class="">
-                            <h3 class="" th:text="${product.name}"></h3>
-                            <p class="">Tomato sauce, mozzarella &amp; oregano</p>
-                            <h6 class="">$18.00</h6>
-                            <a href="" class="">add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div id="listContent">
+
         </div>
+
+
+
+
     </div>
-<script src="static/jquery-3.6.1.min.js"></script>
-<script>
+
+
+
+        <!--<form method="GET" onsubmit="func(document.getElementById('target').valueOf(),document.getElementById('searchWord').valueOf())" name="chk" id="chk" >
+            <fieldset>
+                <select id="target" class="select pull-right">
+                    <option value="">전체</option>
+                    <option value="title">제목</option>
+                    <option value="person">저자</option>
+                    <option value="isbn">isbn</option>
+                    <option value="publisher">출판사</option>
+                </select>
+                <input id="searchWord" type="text">
+                <input type="submit" class="subbutton" value="검색">
+            </fieldset>
+        </form>-->
+        <div class="resultItem">
+
+        </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script th:inline="javascript">
+        function testtest(){
+
+            var xx = {
+                "target":$("#target").val(),
+                "searchWord":$("#searchWord").val()
+            }
+            $.ajax({
+                type:"GET",
+                url:"/search.do",
+                data: xx,
+                dataType: "json"
+            }).done(function (result){
+                console.log(result);
+                $("#listContent").replaceWith(result);
+            })
+        }
+
+    </script>
+<script type="javascript" src="/static/jquery-3.6.1.min.js">
+    function func(tar,ser){
+
+        var book =
+            {
+                target:tar,
+                searchWord:ser
+            };
+
+        $.ajax({
+            url:"/search",
+            type: "GET",
+            data: JSON.parse(book),
+            dataType:'json',
+            success:function (data) {
+
+                $.each(data,function (index,item) {
+                    var aa=
+                        '<table>' +
+                        '<tr>' +
+                        '<td>'+item[index] +'</td>' +
+                        '</tr>' +
+                        '</table>';
+                    $('.resultItem').append(aa
+                    );
+                })
+            }
+        })
+    }
+    function createNewTable(listData) {
+
+        $newTbody = $("<tbody class='new-tbody'></tbody>")
+            $('.resultItem').append($newTbody)
+
+        for(let doc of listData) {
+            let $cellsOfRow=$("<tr>"+
+                "<td>"+ doc.get(authors) +"</td>"+
+                "<td>"+ doc.get(contents) +"</td>"+
+                "<td>"+ doc.get(price) +"</td>"+
+                "<td>"+ doc.get(isbn) +"</td>"+
+                "<td>"+ doc.get(title) +"</td>"+
+                "</tr>"
+            );
+            $newTbody.append($cellsOfRow);
+        }
+
+    }
+/*
+
+
+        $('.subbutton').on("click",function () {
+
+            let rrr = "[[${doc}]]";
+
+            $.ajax({
+                url:"search",
+                type:"GET",
+                dataType: "json",
+                data:JSON.stringify(rrr),
+                success:function () {
+                    var item =
+                        '<table>\n' +
+                        '        <tr th:each="doc, i: ${doc}">\n' +
+                        '            <td th: th:text="${doc.get(authors)}"></td>\n' +
+                        '            <td th:text="${doc.get(contents)}"></td>\n' +
+                        '            <td th:text="${doc.get(price)}"></td>\n' +
+                        '            <td th:text="${doc.get(isbn)}"></td>\n' +
+                        '            <td th:text="${doc.get(title)}"></td>\n' +
+                        '        </tr>\n' +
+                        '    </table>';
+                    $('.resultItem').append(item
+                    );
+
+
+                }
+            })
+        })
+
+
+    })
+
+*/
+
+/*
+
+    $(document).ready(function () {
+        $('.subbutton').on("click",function () {
+
+            let rrr = "[[${doc}]]";
+
+         jQuery.ajax({
+             url:"/search",
+             type:"GET",
+             contentType:"application/json; charset=utf-8",
+             dataType:"json",
+             data:JSON.stringify(rrr),
+             success:function () {
+                 let temp =
+                     /!*[# th:each= "doc:${doc}"]*!/
+                     '<table>\n' +
+                     '        <tr th:each="doc, i: ${doc}">\n' +
+                     '            <td th: th:text="${doc.get(authors)}"></td>\n' +
+                     '            <td th:text="${doc.get(contents)}"></td>\n' +
+                     '            <td th:text="${doc.get(price)}"></td>\n' +
+                     '            <td th:text="${doc.get(isbn)}"></td>\n' +
+                     '            <td th:text="${doc.get(title)}"></td>\n' +
+                     '        </tr>\n' +
+                     '    </table>';
+                 $('.resultItem').append(temp);
+             }
+         })
+        })
+    })
+*/
+
+   /*
+    $(document).ready(function () {
+        $('.subbutton').on("click",function () {
+            $.ajax({
+                url:"/search",
+                type:"GET",
+                contentType:"application/json; charset=utf-8",
+                dataType:"json",
+                success: function () {
+                    let temp =
+                        '<table>\n' +
+                        '        <tr th:each="doc, i: ${doc}">\n' +
+                        '            <td th: th:text="${doc.get(authors)}"></td>\n' +
+                        '            <td th:text="${doc.get(contents)}"></td>\n' +
+                        '            <td th:text="${doc.get(price)}"></td>\n' +
+                        '            <td th:text="${doc.get(isbn)}"></td>\n' +
+                        '            <td th:text="${doc.get(title)}"></td>\n' +
+                        '        </tr>\n' +
+                        '    </table>';
+                    $('.resultItem').append(temp);
+                }
+            })
+
+        })
+    })*/
 
 
 </script>

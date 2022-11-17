@@ -1,18 +1,17 @@
-package com.book.booksearch.member;
+package com.example.searchtest.member;
 
+import com.example.searchtest.search.Book;
+import com.example.searchtest.search.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 @Controller
 public class MemberController {
@@ -62,6 +61,11 @@ public class MemberController {
         {
             result = "error";
         }
+        Book book = new Book();
+        model.addAttribute("chk",book);
+        //model.addAttribute("target",target);
+        //model.addAttribute("searchWord",searchWord);
+
         return result;
     }
 

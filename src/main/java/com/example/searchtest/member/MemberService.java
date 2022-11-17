@@ -1,4 +1,4 @@
-package com.book.booksearch.member;
+package com.example.searchtest.member;
 
 public interface MemberService {
 

@@ -1,6 +1,5 @@
-package com.book.booksearch.member;
+package com.example.searchtest.member;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

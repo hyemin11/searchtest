@@ -1,6 +1,15 @@
-package com.book.booksearch.search;
+package com.example.searchtest.search;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public interface ProductService {
 
-    public String bookSearch(String searchWord, String target) throws Exception;
+    void saveKeyword(Book book) throws Exception;
+
+    HashMap<String, Object> callAPITest(Book book) throws Exception;
+
+    HashMap<String, Object> callAPI(Book book) throws Exception;
 }
